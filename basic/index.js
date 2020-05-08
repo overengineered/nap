@@ -7,11 +7,17 @@ console.log("Arguments:", ...process.argv.slice(2));
 
 let nextPrint;
 
-function periodicPrint() {
+const duration = Number(process.argv[2]);
+
+function periodicPrint(duration) {
   const [seconds, nanoseconds] = process.hrtime(start);
-  const printPause = seconds < 10 ? 1000 : 10000;
-  nextPrint = setTimeout(periodicPrint, printPause);
-  console.log(`Running: ${formatDuration(seconds, nanoseconds)}s`);
+  if (seconds < duration) {
+    const printPause = seconds < 10 ? 1000 : 10000;
+    nextPrint = setTimeout(periodicPrint, printPause, duration);
+    console.log(`Running: ${formatDuration(seconds, nanoseconds)}s`);
+  } else {
+    console.log(`Exit ${formatDuration(seconds, nanoseconds)}s`);
+  }
 }
 
 function stopPrinting(immediate = false) {
@@ -33,4 +39,4 @@ function formatDuration(seconds, nanoseconds) {
 
 process.on("SIGTERM", stopPrinting);
 process.on("SIGINT", () => stopPrinting(true));
-periodicPrint();
+periodicPrint(duration);
