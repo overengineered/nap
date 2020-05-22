@@ -8,7 +8,7 @@ const cwd = process.cwd();
 const packageFile = path.join(cwd, "package.json");
 
 if (!fs.existsSync(packageFile)) {
-  console.log("package.json not found");
+  console.log(`${packageFile} not found`);
   return;
 }
 
@@ -86,8 +86,7 @@ async function main(filter, format = "condensed") {
   let output;
 
   output = await fetchTagData();
-  const npmTags = output.toString().split('\n');
-  // const npmTags = ["ga: 1.2920.0", "latest: 1.2943.0", "rc: 1.2942.0", ""];
+  const npmTags = output.toString().split("\n");
 
   const gaTag = npmTags.find((info) => info.startsWith("ga:"));
 
@@ -114,7 +113,7 @@ async function main(filter, format = "condensed") {
 
   const pretty = format === "condensed" ? "oneline" : format;
   const log = execSync(
-    `git log --pretty=${pretty} ${gaVersion}...${endVersion}`,
+    `git log --pretty=${pretty} ${gaVersion}...${endVersion} -- .`,
     {
       cwd,
     }
