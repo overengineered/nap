@@ -21,7 +21,7 @@ function fetchTagData() {
   let gitTags;
 
   return new Promise((resolve, reject) => {
-    exec("git fetch --tags", { cwd }, (error, stdout) => {
+    exec("git fetch --tags -f", { cwd }, (error, stdout) => {
       if (error) {
         reject(error);
       } else {
@@ -45,12 +45,19 @@ function fetchTagData() {
   });
 }
 
-function chooseTag(tags, filter) {
+function chooseTag(tags, target, npmTags) {
   const matches = {
     excellent: [],
     good: [],
     questionable: [],
   };
+  let filter = target;
+  for (const line of npmTags) {
+    if (line.startsWith(target + ':')) {
+      filter = line.substring(target.length + 2);
+      break;
+    }
+  }
   for (const tag of tags) {
     if (tag === filter) {
       return tag;
@@ -65,7 +72,7 @@ function chooseTag(tags, filter) {
     if (found.length > 0) {
       found.sort();
       if (found.length > 1) {
-        console.log(`Picked ${found[0]} from [${found.join(";")}]`);
+        console.log(`Picked ${found[0]} from [${found.join(";")}] for {${target} -> ${filter}}`);
       }
       return found[0];
     }
@@ -82,7 +89,7 @@ function condense(buffer) {
   return changeLines.concat([""]).join("\n");
 }
 
-async function main(filter, format = "condensed") {
+async function main(target, format = "condensed") {
   let output;
 
   output = await fetchTagData();
@@ -109,7 +116,7 @@ async function main(filter, format = "condensed") {
   output = execSync(`git tag -l`, { cwd });
   const foundTags = output.toString().split("\n").filter(Boolean);
 
-  const endVersion = chooseTag(foundTags, filter);
+  const endVersion = chooseTag(foundTags, target, npmTags);
 
   const pretty = format === "condensed" ? "oneline" : format;
   const log = execSync(
