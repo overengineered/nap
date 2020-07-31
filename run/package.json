@@ -1,0 +1,12 @@
+{
+  "name": "run",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": "./index.js",
+  "scripts": {
+    "test": "echo \"Error: No tests here...\" && exit 1"
+  },
+  "author": "Juozas Kontvainis",
+  "license": "MIT"
+}
