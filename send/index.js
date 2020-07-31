@@ -25,6 +25,8 @@ function updateInstalledModule(sourceDir, targetDir, verbose) {
   const syncableEntities = fs.readdirSync(targetDir, { withFileTypes: true });
   const availableEntities = fs.readdirSync(sourceDir, { withFileTypes: true });
 
+  const targetParent = path.dirname(targetDir);
+
   // Black list all source directories and hidden files
   const exclude = new Set();
   for (const entity of availableEntities) {
@@ -44,7 +46,7 @@ function updateInstalledModule(sourceDir, targetDir, verbose) {
   exclude.add("package.json");
   exclude.add("node_modules");
 
-  syncDirectories(sourceDir, targetDir, Array.from(exclude.values()), verbose);
+  syncDirectories(sourceDir, targetParent, Array.from(exclude.values()), verbose);
   console.log("✓");
 }
 
